@@ -1,0 +1,161 @@
+CREATE TABLE USUARIO (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nome_usuario VARCHAR(100) NOT NULL,
+    cpf_usuario VARCHAR(14),
+    cnpj_usuario VARCHAR(18),
+    senha_usuario VARCHAR(255) NOT NULL,
+    email_usuario VARCHAR(320) NOT NULL,
+    data_adicao DATE NOT NULL
+);
+
+CREATE TABLE ENDERECO (
+    id_endereco INT AUTO_INCREMENT PRIMARY KEY,
+    cep VARCHAR(10),
+    rua VARCHAR(255),
+    bairro VARCHAR(255),
+    cidade VARCHAR(255),
+    estado VARCHAR(2),
+    id_usuario INT,
+    FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario)
+);
+
+CREATE TABLE TELEFONE (
+    id_telefone INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    num_telefone VARCHAR(9) NOT NULL,
+    ddd VARCHAR(2) NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES USUARIO(id_usuario)
+);
+
+CREATE TABLE CARGO (
+    id_cargo INT AUTO_INCREMENT PRIMARY KEY,
+    nome_cargo VARCHAR(100) NOT NULL
+);
+
+ALTER TABLE USUARIO
+ADD COLUMN id_cargo INT,
+ADD FOREIGN KEY (id_cargo) REFERENCES CARGO(id_cargo);
+
+ALTER TABLE USUARIO ADD COLUMN ativo TINYINT(1) DEFAULT 1;
+
+ALTER TABLE CARGO ADD COLUMN nivel_permissao INT NOT NULL DEFAULT 1;
+
+UPDATE CARGO SET nivel_permissao = 3 WHERE id_cargo = 1; -- Gerente
+UPDATE CARGO SET nivel_permissao = 2 WHERE id_cargo = 2; -- Vendedor
+UPDATE CARGO SET nivel_permissao = 1 WHERE id_cargo = 3; -- Caixa
+
+CREATE TABLE produtos (
+    id_produto INT AUTO_INCREMENT PRIMARY KEY,
+    nome_produto VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE RECEITA (
+    id_receita INT AUTO_INCREMENT PRIMARY KEY,
+    data_venda DATE NOT NULL,
+    nome_cliente VARCHAR(100),
+    nome_produto VARCHAR(100),
+    qtd_produto INT NOT NULL,
+    val_unitario DECIMAL(10,2) NOT NULL,
+    total_receita DECIMAL(10,2) NOT NULL,
+    id_categoria INT NOT NULL,
+    id_sabor INT NOT NULL,
+    id_forma_pagamento INT NOT NULL,
+    FOREIGN KEY (id_categoria) REFERENCES CATEGORIA_RECEITA(id_categoria),
+    FOREIGN KEY (id_sabor) REFERENCES SABOR_PRODUTO(id_sabor),
+    FOREIGN KEY (id_forma_pagamento) REFERENCES FORMAS_PAGAMENTO(id_forma_pagamento)
+);
+
+CREATE TABLE SABOR_PRODUTO (
+    id_sabor INT AUTO_INCREMENT PRIMARY KEY,
+    nome_sabor VARCHAR(100) NOT NULL
+);
+
+ALTER TABLE RECEITA
+ADD COLUMN id_sabor INT,
+ADD FOREIGN KEY (id_sabor) REFERENCES SABOR_PRODUTO(id_sabor);
+
+INSERT INTO SABOR_PRODUTO (nome_sabor) VALUES
+('Morango'),
+('Chocolate'),
+('Napolitano'),
+('Maracujá');
+
+CREATE TABLE DESPESA_PRODUTO (
+    id_despesa_prod INT AUTO_INCREMENT PRIMARY KEY,
+    data_compra DATE NOT NULL,
+    nome_produto VARCHAR(100) NOT NULL,
+    qtd_produto INT NOT NULL,
+    val_unitario DECIMAL(10, 2) NOT NULL,
+    total_despesa DECIMAL(10, 2) NOT NULL,
+    validade DATE
+);
+
+CREATE TABLE FORNECEDOR (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL
+);
+
+ALTER TABLE DESPESA_PRODUTO ADD COLUMN id_fornecedor INT;
+
+ALTER TABLE DESPESA_PRODUTO
+ADD CONSTRAINT fk_fornecedor
+FOREIGN KEY (id_fornecedor) REFERENCES FORNECEDOR(id);
+
+CREATE TABLE DESPESA_VARIADOS (
+    id_despesa_variados INT AUTO_INCREMENT PRIMARY KEY,
+    data_conta DATE NOT NULL,
+    data_pagamento DATE NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    variado VARCHAR(100)
+);
+
+CREATE TABLE FUNCIONARIO (
+    id_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    nome_funcionario VARCHAR(100) NOT NULL,
+    cpf_funcionario VARCHAR(14) NOT NULL UNIQUE,
+    rg_funcionario VARCHAR(20) NOT NULL,
+    id_cargo INT,
+    data_admissao DATE NOT NULL,
+    salario DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (id_cargo) REFERENCES CARGO(id_cargo)
+);
+
+CREATE TABLE endereco_funcionario (
+    id_endereco_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    cep_funcionario VARCHAR(10),
+    rua_funcionario VARCHAR(255),
+    numero_funcionario VARCHAR(10),
+    bairro_funcionario VARCHAR(255),
+    cidade_funcionario VARCHAR(255),
+    estado_funcionario VARCHAR(2),
+    id_funcionario INT,
+    FOREIGN KEY (id_funcionario) REFERENCES FUNCIONARIO(id_funcionario)
+);
+
+CREATE TABLE telefone_funcionario (
+    id_telefone_funcionario INT AUTO_INCREMENT PRIMARY KEY,
+    id_funcionario INT,
+    num_telefone_funcionario VARCHAR(9) NOT NULL,
+    ddd_funcionario VARCHAR(2) NOT NULL,
+    FOREIGN KEY (id_funcionario) REFERENCES FUNCIONARIO(id_funcionario)
+);
+
+CREATE TABLE DESPESAS_FIXAS (
+    id_despesa INT AUTO_INCREMENT PRIMARY KEY,
+    categoria VARCHAR(50) NOT NULL, -- Ex: 'Água', 'Energia', 'Internet'
+    data_conta DATE NOT NULL,
+    data_pagamento DATE NOT NULL,
+    descricao VARCHAR(255) NOT NULL,
+    valor DECIMAL(10, 2) NOT NULL,
+    id_forma_pagamento INT,
+    FOREIGN KEY (id_forma_pagamento) REFERENCES FORMAS_PAGAMENTO(id_forma_pagamento)
+);
+
+CREATE TABLE FORMAS_PAGAMENTO (
+    id_forma_pagamento INT AUTO_INCREMENT PRIMARY KEY,
+    descricao VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE USUARIO ADD COLUMN ativo TINYINT(1) DEFAULT 1;
+ALTER TABLE DESPESA_FUNCIONARIO ADD COLUMN ativo TINYINT(1) DEFAULT 1;
