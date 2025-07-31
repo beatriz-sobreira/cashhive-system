@@ -1,4 +1,4 @@
-# 💰 CashHive
+# 💰 CashHive System
 
 CashHive is a business expense management system developed as an **Integrative Project** in the **Software Engineering** module of the **Systems Analysis and Development** course at UniFAP. 
 
